@@ -3,29 +3,15 @@
         <div class="flex justify-between border-b border-default p-4">
             <UInput v-model="query" placeholder="Suche" leading-icon="i-lucide-search">
                 <template #trailing>
-                    <UButton size="sm" variant="ghost" color="neutral" @click="fetch" icon="i-lucide-refresh-ccw" />
+                    <UButton size="xs" variant="ghost" color="neutral" @click="fetch" icon="i-lucide-refresh-ccw" />
                 </template>
             </UInput>
             <div class="flex-1"></div>
-            <UButton color="primary" @click="editAnimal.open()" trailing-icon="i-lucide-plus">Neu anlegen</UButton>
+            <UButton color="primary" @click="editPedigree.open()" trailing-icon="i-lucide-plus">Neu anlegen</UButton>
         </div>
 
         <UContextMenu :items="contextMenuItems" arrow>
             <UTable sticky :data="items" :columns="columns" @select="onSelect" @contextmenu="onContextMenu" class="flex-1">
-                <template #name-cell="{ row }">
-                    <div class="flex gap-3 items-center">
-                        <AppSexIcon class="w-8 h-8" :sex="row.original.sex" />
-                        {{ conditionalReverse([row.original.name, row.original.kennel], row.original.kennelNameFirst).join(' ') || '—' }}
-                    </div>
-                </template>
-                <template #father-cell="{ row }">
-                    <span v-if="row.original.father">{{ conditionalReverse([row.original.father.name, row.original.father.kennel], row.original.father.kennelNameFirst).join(' ')}}</span>
-                    <span v-else>—</span>
-                </template>
-                <template #mother-cell="{ row }">
-                    <span v-if="row.original.mother">{{ conditionalReverse([row.original.mother.name, row.original.mother.kennel], row.original.mother.kennelNameFirst).join(' ')}}</span>
-                    <span v-else>—</span>
-                </template>
                 <template #action-cell="{ row }">
                     <UDropdownMenu :items="getActions(row)" arrow>
                         <UButton icon="i-lucide-ellipsis-vertical" color="neutral" variant="ghost" aria-label="Aktionen" />
@@ -49,7 +35,7 @@
         </div>
     </div>
 
-    <SlideoverEditAnimal ref="editAnimal" @saved="fetch"/>
+    <SlideoverEditPedigree ref="editPedigree" @saved="fetch"/>
 </template>
 
 <script lang="ts" setup>
@@ -58,11 +44,11 @@
     import type { Row } from '@tanstack/vue-table'
 
     useSeoMeta({
-        title: 'Tiere',
-        description: 'Übersicht aller Tiere',
+        title: 'Ahnentafeln',
+        description: 'Übersicht aller Ahnentafeln',
     })
 
-    const editAnimal = ref()
+    const editPedigree = ref()
     const query = ref('')
     const items = ref<any[]>([])
     const pagination = ref({
@@ -77,52 +63,20 @@
     const toast = useToast()
     const UButton = resolveComponent('UButton')
     const UDropdownMenu = resolveComponent('UDropdownMenu')
-    const columns: TableColumn<Animal>[] = [
+    const columns: TableColumn<Pedigree>[] = [
         {
-            id: 'name',
-            header: 'Name',
-        },
-        {
-            accessorKey: 'chipNumber',
-            header: 'Chip-Nr.',
+            accessorKey: 'title',
+            header: 'Wurfname',
             cell: info => info.getValue() || '—',
         },
         {
-            accessorKey: 'studbookNumber',
-            header: 'ZB-Nr.',
+            accessorKey: 'kennel',
+            header: 'Zwingername',
             cell: info => info.getValue() || '—',
         },
         {
-            accessorKey: 'breed',
-            header: 'Rasse',
-            cell: info => info.getValue() || '—',
-        },
-        {
-            id: 'father',
-            header: 'Vater',
-        },
-        {
-            id: 'mother',
-            header: 'Mutter',
-        },
-        {
-            accessorKey: 'birthDate',
-            header: 'Geburtstag',
-            cell: info => info.getValue() ? dayjs(info.getValue() as string).format('DD.MM.YYYY') : '—',
-        },
-        {
-            accessorKey: 'size',
-            header: 'Größe',
-            cell: info => info.getValue() || '—',
-        },
-        {
-            accessorKey: 'hairType',
-            header: 'Haartyp',
-            cell: info => info.getValue() || '—',
-        },
-        {
-            accessorKey: 'hairColor',
-            header: 'Haarfarbe',
+            accessorKey: 'address',
+            header: 'Adresse',
             cell: info => info.getValue() || '—',
         },
         {
@@ -140,42 +94,47 @@
         },
     ]
 
-    function getActions(row: Row<Animal>) {
+    function getActions(row: Row<Pedigree>) {
         return [
             {
                 label: 'Bearbeiten',
                 icon: 'i-lucide-edit-2',
-                onSelect: () => editAnimal.value.open(row.original),
+                to: `/pedigrees/${row.original.id}`,
+            },
+            {
+                label: 'Umbennennen',
+                icon: 'i-lucide-pen-line',
+                onSelect: () => editPedigree.value.open(row.original),
             },
             {
                 label: 'Duplizieren',
                 icon: 'i-lucide-copy-plus',
-                onSelect: () => editAnimal.value.open({ ...row.original, id: null }),
+                onSelect: () => editPedigree.value.open({ ...row.original, id: null }),
             },
             { type: 'separator', },
             {
                 label: 'Löschen',
                 icon: 'i-lucide-trash',
                 color: 'error',
-                onSelect: () => deleteAnimal(row.original.id),
+                onSelect: () => deletePedigree(row.original.id),
             },
         ]
     }
     
     const contextMenuItems = ref<ContextMenuItem[]>([])
-    function onContextMenu(_: Event, row: Row<Animal>) {
+    function onContextMenu(_: Event, row: Row<Pedigree>) {
         contextMenuItems.value = getActions(row) as ContextMenuItem[]
     }
 
-    function onSelect(_: Event, row: Row<Animal>) {
-        editAnimal.value.open(row.original)
+    function onSelect(_: Event, row: Row<Pedigree>) {
+        navigateTo(`/pedigrees/${row.original.id}`)
     }
 
 
 
 
     async function fetch() {
-        const { items: results, page, size, totalPages, totalItems } = await $fetch('/api/animals', {
+        const { items: results, page, size, totalPages, totalItems } = await $fetch('/api/pedigrees', {
             method: 'GET',
             params: {
                 page: pagination.value.page,
@@ -191,12 +150,12 @@
         pagination.value.totalItems = totalItems
     }
 
-    async function deleteAnimal(id: number) {
-        await $fetch(`/api/animals/${id}`, {
+    async function deletePedigree(id: number) {
+        await $fetch(`/api/pedigrees/${id}`, {
             method: 'DELETE',
         })
 
-        toast.add({ title: 'Tier gelöscht', color: 'success', icon: 'i-lucide-circle-check' })
+        toast.add({ title: 'Ahnentafel gelöscht', color: 'success', icon: 'i-lucide-circle-check' })
         fetch()
     }
 

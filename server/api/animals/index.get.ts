@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
     const dbQuery = []
 
     if (requestQuery.query) {
+        // TODO: Fuzzy search
         dbQuery.push(or(
             like(tables.animals.name, `%${requestQuery.query}%`),
             like(tables.animals.kennel, `%${requestQuery.query}%`),
@@ -30,15 +31,14 @@ export default defineEventHandler(async (event) => {
         dbQuery.push(notInArray(tables.animals.id, requestQuery.exclude))
     }
 
-    const results = await useDrizzle()
-        .select()
-        .from(tables.animals)
-        .where(and(...dbQuery))
-        .with({
-            father: true,
-        })
-        .orderBy(desc(tables.animals.createdAt))
-        .all()
+    const results = await useDrizzle().query.animals.findMany({
+        with: {
+            mother: { columns: {id: true, name: true, kennel: true, kennelNameFirst: true, sex: true} },
+            father: { columns: {id: true, name: true, kennel: true, kennelNameFirst: true, sex: true} },
+        },
+        where: and(...dbQuery),
+        orderBy: desc(tables.animals.createdAt),
+    })
     
     return usePaginate(results, requestQuery.page, requestQuery.size)
 })

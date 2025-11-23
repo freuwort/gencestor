@@ -33,10 +33,24 @@
         align-items: center
         height: 100%
         aspect-ratio: 1
+        transition: all 75ms
 
+        &::after
+            content: ''
+            position: absolute
+            right: 1.25rem
+            left: 1.25rem
+            bottom: .5rem
+            background: currentColor
+            height: 2.5px
+            border-radius: .5rem
+            opacity: 0
+            transition: opacity 100ms ease-in-out
+
+        &:hover,
+        &:focus,
         &.router-link-active
             background: var(--ui-bg)
-            color: var(--ui-primary)
 
             .corner
                 opacity: 1
@@ -44,7 +58,9 @@
         &:focus
             outline: 2px solid var(--ui-primary)
             outline-offset: -2px
-            background: var(--ui-bg)
+
+        &.router-link-active
+            color: var(--ui-primary)
 
         .corner
             position: absolute
@@ -54,6 +70,7 @@
             pointer-events: none
             bottom: 0
             opacity: 0
+            transition: all 75ms
 
             &::after
                 content: ''

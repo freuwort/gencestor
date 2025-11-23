@@ -39,5 +39,4 @@ export default defineEventHandler(async (event) => {
         .returning() as Animal[]
 
     return result[0]
-    return requestBody
 })

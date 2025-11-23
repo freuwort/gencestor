@@ -15,6 +15,13 @@
       "when": 1763663389922,
       "tag": "0001_free_ultimates",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1763671298738,
+      "tag": "0002_far_shooting_star",
+      "breakpoints": true
     }
   ]
 }

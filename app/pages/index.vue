@@ -1,14 +1,15 @@
 <template>
-    <div class="flex gap-2 p-4 items-center">
-        Übersicht
-        <AppSexIcon class="h-7 w-12" sex="male" />
-        <AppSexIcon class="h-7 w-12" sex="female" />
-        <AppSexIcon class="h-7 w-12" sex="unknown" />
-        <AppSexIcon class="h-7 w-12" />
+    <div class="p-8">
+        <h1 class="text-4xl font-bold">Willkommen zurück!</h1>
+        <p class="text-lg mt-2">Schön, dich wiederzusehen.</p>
     </div>
 </template>
 
 <script lang="ts" setup>
+    useSeoMeta({
+        title: 'Übersicht',
+        description: 'Übersicht und Schnellzugriffe',
+    })
 </script>
 
 <style lang="sass" scoped>

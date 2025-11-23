@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 
 export const settings = sqliteTable('settings', {
     key: text('key').primaryKey().unique(),
@@ -35,10 +35,20 @@ export const animals = sqliteTable('animals', {
     size: text('size'),
     hairType: text('hair_type'),
     hairColor: text('hair_color'),
-    pedigreeId: integer('pedigree_id').references(() => pedigrees.id),
+    pedigreeId: integer('pedigree_id').references(() => pedigrees.id, { onDelete: 'set null', onUpdate: 'cascade' }),
     // @ts-ignore
-    motherId: integer('mother_id').references(() => animals.id),
-    fatherId: integer('father_id').references(() => animals.id),
+    motherId: integer('mother_id').references(() => animals.id, { onDelete: 'set null', onUpdate: 'cascade' }),
+    fatherId: integer('father_id').references(() => animals.id, { onDelete: 'set null', onUpdate: 'cascade' }),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`),
     updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().default(sql`(unixepoch())`).$onUpdate(() => new Date()),
 })
+
+export const pedigreesRelations = relations(pedigrees, ({ many }) => ({
+    animals: many(animals),
+}))
+
+export const animalsRelations = relations(animals, ({ one }) => ({
+    mother: one(animals, { fields: [animals.motherId], references: [animals.id] }),
+    father: one(animals, { fields: [animals.fatherId], references: [animals.id] }),
+    pedigree: one(pedigrees, { fields: [animals.pedigreeId], references: [pedigrees.id] }),
+}))

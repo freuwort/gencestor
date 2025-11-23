@@ -4,7 +4,14 @@
 @theme {
     --font-sans: 'Inter', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
     --ui-primary: var(--color-indigo-500);
+}
+
+.dark {
+    --ui-primary: var(--color-indigo-400);
 }
 
 #__nuxt {
