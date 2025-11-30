@@ -1,4 +1,4 @@
-import { and, desc, inArray, like, notInArray, or } from 'drizzle-orm'
+import { and, asc, desc, inArray, like, notInArray, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 const requestQuerySchema = z.object({
@@ -16,10 +16,8 @@ export default defineEventHandler(async (event) => {
     const dbQuery = []
 
     if (requestQuery.query) {
-        // TODO: Joint search on name and kennel respecting kennelNameFirst setting
         dbQuery.push(or(
-            like(tables.animals.name, `%${requestQuery.query}%`),
-            like(tables.animals.kennel, `%${requestQuery.query}%`),
+            like(tables.animals.displayName, `%${requestQuery.query}%`),
             like(tables.animals.chipNumber, `%${requestQuery.query}%`),
             like(tables.animals.studbookNumber, `%${requestQuery.query}%`),
         ))
@@ -35,11 +33,11 @@ export default defineEventHandler(async (event) => {
 
     const results = await useDrizzle().query.animals.findMany({
         with: {
-            mother: { columns: {id: true, name: true, kennel: true, kennelNameFirst: true, sex: true} },
-            father: { columns: {id: true, name: true, kennel: true, kennelNameFirst: true, sex: true} },
+            mother: { columns: {id: true, displayName: true, sex: true} },
+            father: { columns: {id: true, displayName: true, sex: true} },
         },
         where: and(...dbQuery),
-        orderBy: desc(tables.animals.createdAt),
+        orderBy: asc(tables.animals.displayName),
     })
     
     return usePaginate(results, requestQuery.page, requestQuery.size)

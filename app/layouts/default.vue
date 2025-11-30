@@ -5,8 +5,8 @@
         <div class="flex items-center px-4 gap-2 h-14">
             <AppNavButton to="/" icon="i-lucide-layout-dashboard" tooltip="Übersicht" />
             <USeparator class="h-8" orientation="vertical" />
-            <AppNavButton to="/animals" icon="i-lucide-dog" tooltip="Tiere" />
             <AppNavButton to="/pedigrees" icon="i-lucide-book-open" tooltip="Ahnentafeln" />
+            <AppNavButton to="/animals" icon="i-lucide-dog" tooltip="Tiere" />
             <div class="flex-1"></div>
             <UTooltip arrow text="Wechseln Sie den Farbmodus">
                 <UColorModeButton size="lg"/>

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1763655132280,
-      "tag": "0000_familiar_hemingway",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1763663389922,
-      "tag": "0001_free_ultimates",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1763671298738,
-      "tag": "0002_far_shooting_star",
+      "when": 1764426465327,
+      "tag": "0000_first_retro_girl",
       "breakpoints": true
     }
   ]

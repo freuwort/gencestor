@@ -13,10 +13,10 @@
             <UInput type="date" v-model="(form.birthDate as null)" leading-icon="i-lucide-calendar"/>
             <UTextarea v-model="form.address" placeholder="Züchter / Adresse" leading-icon="i-lucide-info" />
             <div class="flex-1"></div>
-            <UButton label="Drucken" variant="subtle" icon="i-lucide-printer" @click="printPedigree.open(form)" :loading="isLoading" />
+            <UButton label="Drucken" size="lg" icon="i-lucide-printer" @click="printPedigree.open(form)" :loading="isLoading" />
         </div>
-        <div class="h-full flex-1 flex flex-col gap-4 p-4 overflow-auto">
-            <UTabs :items="tabs" :ui="{root: 'h-full flex-1', content: 'h-full flex-1'}">
+        <div class="h-full flex-1 flex flex-col gap-4 overflow-auto">
+            <UTabs :items="tabs" variant="link" :ui="{root: 'h-full flex-1 gap-0', content: 'h-full flex-1 p-4', list: 'px-4 py-0', trigger: 'py-5'}">
                 <template #puppies>
                     <UContextMenu :items="contextMenuItems" arrow>
                         <UTable class="h-full flex-1 rounded-lg border border-default" sticky :data="form.animals" :columns="columns" @select="onSelect" @contextmenu="onContextMenu">
@@ -28,9 +28,9 @@
         
                             <template #action-header>
                                 <div class="flex items-center gap-2 justify-end">
-                                    <UButton size="sm" icon="i-lucide-plus" variant="subtle" @click="openEditPuppy()">Neu</UButton>
+                                    <UButton size="sm" icon="i-lucide-plus" @click="openEditPuppy()">Neu</UButton>
                                     <AppAnimalSelect @select="syncPuppy($event)" :exclude="form.animals.map((a: any) => a.id)">
-                                        <UButton size="sm" icon="i-lucide-search" variant="outline">Suchen</UButton>
+                                        <UButton size="sm" icon="i-lucide-search" variant="subtle">Suchen</UButton>
                                     </AppAnimalSelect>
                                 </div>
                             </template>
@@ -50,7 +50,7 @@
                     <div class="flex-1 flex flex-col gap-2 pl-4">
                         <div class="flex-1 relative">
                             <template v-if="form.father">
-                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.fatherId = null"/>
+                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.fatherId = null; form.father = null"/>
                                 <AppTreeBuilder :animal="form.father" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent" />
                             </template>
                             <UFieldGroup class="w-80" size="sm" v-else>
@@ -62,7 +62,7 @@
                         </div>
                         <div class="flex-1 relative">
                             <template v-if="form.mother">
-                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.motherId = null"/>
+                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.motherId = null; form.mother = null"/>
                                 <AppTreeBuilder :animal="form.mother" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent" />
                             </template>
                             <UFieldGroup class="w-80" size="sm" v-else>
@@ -74,7 +74,9 @@
                         </div>
                     </div>
                 </template>
-                <template #preview></template>
+                <template #preview>
+                    <AppPedigreePreview class="h-full" ref="previewPedigree" :pedigree="form" />
+                </template>
             </UTabs>
 
         </div>
@@ -123,10 +125,11 @@
         father: null,
         animalIds: form.value.animals?.map((a: AnimalResource) => a.id).sort() || [],
     }))
+    const animalDataStore = useAnimalDataStore()
     const isDirty = computed(() => formHash.value !== JSON.stringify(destilledForm.value))
     const editAnimal = ref()
     const printPedigree = ref()
-    const animalDataStore = useAnimalDataStore()
+    const previewPedigree = ref()
 
 
 
@@ -170,11 +173,6 @@
         {
             accessorKey: 'hairColor',
             header: 'Haarfarbe',
-            cell: info => info.getValue() || '—',
-        },
-        {
-            accessorKey: 'notes',
-            header: 'Notizen',
             cell: info => info.getValue() || '—',
         },
         {
@@ -296,6 +294,7 @@
         isLoading.value = false
         
         cleanDirtyForm()
+        previewPedigree.value?.reload()
     }
 
     async function fetchPedigree() {
@@ -314,17 +313,17 @@
 
     async function save() {
         isLoading.value = true
-        cleanDirtyForm()
         await $fetch('/api/pedigrees/'+id, {
             method: 'PUT',
             body: {
                 ...form.value,
                 animals: form.value.animals?.map((a: AnimalResource) => a.id) || [],
-                motherId: form.value.mother?.id || null,
-                fatherId: form.value.father?.id || null,
             },
         })
         isLoading.value = false
+
+        cleanDirtyForm()
+        previewPedigree.value?.reload()
     }
     
     const triggerAutoSave = useDebounceFn(async () => {

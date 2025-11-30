@@ -3,7 +3,7 @@
         <div class="w-80 flex items-center gap-2 px-3 rounded-lg border border-accented">
             <UButton class="flex-1" color="neutral" variant="ghost" @click="emit('edit', {animal: animal})">
                 <template #leading><AppSexIcon class="w-9 h-6" inner-class="size-4" :sex="animal.sex" /></template>
-                {{ conditionalReverse([animal.name, animal.kennel], animal.kennelNameFirst).join(' ') }}
+                {{ animal.displayName || '—' }}
             </UButton>
         </div>
         <div class="flex flex-col gap-2 pl-2" v-if="generation <= 3">

@@ -2,16 +2,24 @@
     <USlideover :title="title" :description="description" v-model:open="isOpen">
         <template #body>
             <div class="flex flex-col">
-                <!-- TODO: Duplicate checker -->
-                <!-- TODO: Link to pedigree -->
+                <UAlert class="mb-6" color="info" variant="subtle" title="Mit Ahnentafel verbunden" icon="i-lucide-book-open" v-if="hasPedigree" :actions="[{
+                    label: 'Ahnentafel anzeigen',
+                    as: 'a',
+                    color: 'info',
+                    variant: 'subtle',
+                    target: '_blank',
+                    href: `/pedigrees/${form.pedigreeId}`,
+                }]" />
+
+                <UAlert class="mb-6" color="error" variant="subtle" title="Mögliche Duplikate erkannt" icon="i-lucide-copy-slash" v-if="duplicates.length > 0"/>
                 
                 <template v-if="!hidden.includes('IDENTITY')">
                     <span class="mt-0 mb-2">Identität</span>
                     <div class="flex flex-col gap-4">
                         <div class="flex gap-2 items-center" :class="{'flex-row-reverse': form.kennelNameFirst}">
                             <UInput class="flex-1" v-model="form.name" placeholder="Name" leading-icon="i-lucide-tag" :autofocus="!form.kennelNameFirst" :disabled="disabled.includes('name')" v-if="!hidden.includes('name')"/>
-                            <UButton @click="form.kennelNameFirst = !form.kennelNameFirst" color="neutral" variant="ghost" icon="i-lucide-arrow-right-left" :disabled="disabled.includes('kennelNameFirst')"/>
-                            <UInput class="flex-1" v-model="form.kennel" placeholder="Zwinger" leading-icon="i-lucide-house" :autofocus="form.kennelNameFirst" :disabled="disabled.includes('kennel')" v-if="!hidden.includes('kennel')"/>
+                            <UButton @click="form.kennelNameFirst = !form.kennelNameFirst" color="neutral" variant="ghost" icon="i-lucide-arrow-right-left" :disabled="hasPedigree || disabled.includes('kennelNameFirst')"/>
+                            <UInput class="flex-1" v-model="form.kennel" placeholder="Zwinger" leading-icon="i-lucide-house" :autofocus="form.kennelNameFirst" :disabled="hasPedigree || disabled.includes('kennel')" v-if="!hidden.includes('kennel')"/>
                         </div>
                         <UInput v-model="form.chipNumber" placeholder="Chipnummer" leading-icon="i-lucide-cpu" :disabled="disabled.includes('chipNumber')" v-if="!hidden.includes('chipNumber')"/>
                         <UInput v-model="form.studbookNumber" placeholder="Zuchtbuch-Nr." leading-icon="i-lucide-book-user" :disabled="disabled.includes('studbookNumber')" v-if="!hidden.includes('studbookNumber')"/>
@@ -23,8 +31,8 @@
                     <span class="mt-6 mb-2">Geburt</span>
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center gap-1" v-if="!hidden.includes('breed')">
-                            <UInputMenu class="flex-1" v-model="(form.breed as string)" :items="animalDataStore.breeds" createItem="always" @create="onCreateBreed" placeholder="Rasse" leading-icon="i-lucide-dog" :disabled="disabled.includes('breed')"/>
-                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Rasse entfernen" @click="form.breed = null" :disabled="!form.breed || disabled.includes('breed')" />
+                            <UInputMenu class="flex-1" v-model="(form.breed as string)" :items="animalDataStore.breeds" createItem="always" @create="onCreateBreed" placeholder="Rasse" leading-icon="i-lucide-dog" :disabled="hasPedigree || disabled.includes('breed')"/>
+                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Rasse entfernen" @click="form.breed = null" :disabled="!form.breed || hasPedigree || disabled.includes('breed')" />
                         </div>
                         <div class="flex items-center gap-1" v-if="!hidden.includes('sex')">
                             <USelect class="flex-1 pl-14 mr-8" v-model="(form.sex as string)" value-key="value" placeholder="Geschlecht" :items="sexItems" :disabled="disabled.includes('sex')">
@@ -32,8 +40,8 @@
                             </USelect>
                         </div>              
                         <div class="flex items-center gap-1" v-if="!hidden.includes('birthDate')">
-                            <UInput class="flex-1" type="date" v-model="(form.birthDate as null)" leading-icon="i-lucide-calendar" :disabled="disabled.includes('birthDate')"/>
-                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Datum entfernen" @click="form.birthDate = null" :disabled="!form.birthDate || disabled.includes('birthDate')" />
+                            <UInput class="flex-1" type="date" v-model="(form.birthDate as null)" leading-icon="i-lucide-calendar" :disabled="hasPedigree || disabled.includes('birthDate')"/>
+                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Datum entfernen" @click="form.birthDate = null" :disabled="!form.birthDate || hasPedigree || disabled.includes('birthDate')" />
                         </div>
                     </div>
                 </template>
@@ -44,21 +52,21 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center gap-1" v-if="!hidden.includes('fatherId')">
                             <AppAnimalSelect :exclude="form.id ? [form.id] : []" :sex="['male', 'unknown']" @select="form.fatherId = $event.id; form.father = $event">
-                                <UButton class="flex-1" color="neutral" variant="outline" size="xs" :disabled="disabled.includes('fatherId')">
+                                <UButton class="flex-1" color="neutral" variant="outline" size="xs" :disabled="hasPedigree || disabled.includes('fatherId')">
                                     <template #leading><AppSexIcon sex="male" inner-class="size-4" class="w-9 h-6 mr-1" /></template>
-                                    {{ form.father ? conditionalReverse([form.father.name, form.father.kennel], !!form.father.kennelNameFirst).join(' ') : 'Vater hinzufügen' }}
+                                    {{ form.father ? form.father.displayName || '—' : 'Vater hinzufügen' }}
                                 </UButton>
                             </AppAnimalSelect>
-                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Vater entfernen" @click="form.fatherId = null; form.father = null" :disabled="!form.fatherId || disabled.includes('fatherId')" />
+                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Vater entfernen" @click="form.fatherId = null; form.father = null" :disabled="!form.fatherId || hasPedigree || disabled.includes('fatherId')" />
                         </div>
                         <div class="flex items-center gap-1" v-if="!hidden.includes('motherId')">
                             <AppAnimalSelect :exclude="form.id ? [form.id] : []" :sex="['female', 'unknown']" @select="form.motherId = $event.id; form.mother = $event">
-                                <UButton class="flex-1" color="neutral" variant="outline" size="xs" :disabled="disabled.includes('motherId')">
+                                <UButton class="flex-1" color="neutral" variant="outline" size="xs" :disabled="hasPedigree || disabled.includes('motherId')">
                                     <template #leading><AppSexIcon sex="female" inner-class="size-4" class="w-9 h-6 mr-1" /></template>
-                                    {{ form.mother ? conditionalReverse([form.mother.name, form.mother.kennel], !!form.mother.kennelNameFirst).join(' ') : 'Mutter hinzufügen' }}
+                                    {{ form.mother ? form.mother.displayName || '—' : 'Mutter hinzufügen' }}
                                 </UButton>
                             </AppAnimalSelect>
-                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Mutter entfernen" @click="form.motherId = null" :disabled="!form.motherId || disabled.includes('motherId')" />
+                            <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Mutter entfernen" @click="form.motherId = null" :disabled="!form.motherId || hasPedigree || disabled.includes('motherId')" />
                         </div>
                     </div>
                 </template>
@@ -116,6 +124,7 @@
 
 <script lang="ts" setup>
     import dayjs from 'dayjs'
+    import { useDebounceFn } from '@vueuse/core'
     import type { AnimalStructure } from '~~/types/animal'
     type SaveMode = 'stayOpen' | 'createNew' | 'createDuplicate'
     type SlideoverField = 'IDENTITY' | 'BIRTH' | 'PARENTS' | 'APPEARANCE' | 'NOTES' | 'ACTIONS' | 'name' | 'kennelNameFirst' | 'kennel' | 'chipNumber' | 'studbookNumber' | 'birthDate' | 'breed' | 'sex' | 'hairType' | 'hairColor' | 'size' | 'fatherId' | 'motherId' | 'awardsLength1' | 'awardsLength2' | 'awardsLength3' | 'awardsLength4' | 'notes'
@@ -127,8 +136,9 @@
     const hidden = ref<SlideoverField[]>([])
     const callback = ref<Callback | null>(null)
     const isEditing = computed(() => form.value.id != null)
+    const hasPedigree = computed(() => form.value.pedigreeId != null)
     const title = computed(() => isEditing.value ? 'Tier bearbeiten' : 'Neues Tier erstellen')
-    const description = computed(() => conditionalReverse([form.value.name || 'Unbenannt', form.value.kennel || ''], !!form.value.kennelNameFirst).join(' '))
+    const description = computed(() => form.value.displayName || 'Unbennnt')
     const animalDataStore = useAnimalDataStore()
 
     const emit = defineEmits([
@@ -170,6 +180,25 @@
     }
 
 
+    
+    const duplicates = ref<Animal[]>([])
+    const fetchDuplicateAnimals = useDebounceFn(async () => {
+        if (!form.value.name && !form.value.kennel) return duplicates.value = []
+
+        duplicates.value = await $fetch<Animal[]>('/api/animals/duplicate-check', {
+            method: 'GET',
+            query: {
+                self: form.value.id,
+                name: form.value.name || '',
+                kennel: form.value.kennel || '',
+                breed: form.value.breed || '',
+                sex: form.value.sex || '',
+            }
+        })
+    }, 1000)
+    watch(() => [form.value.name, form.value.kennel, form.value.breed, form.value.sex], fetchDuplicateAnimals, { immediate: false })
+
+
 
     function open(animal: Partial<AnimalStructure> = {}, cb: Callback | null = null, options: { disable?: SlideoverField[], hide?: SlideoverField[] } = {}) {
         reset()
@@ -193,6 +222,7 @@
     }
 
     function reset() {
+        duplicates.value = []
         form.value = {
             id: null,
             chipNumber: '',

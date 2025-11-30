@@ -7,7 +7,7 @@
                     <div class="flex gap-2 items-center">
                         <AppSexIcon :sex="item.sex" class="size-8" />
                         <div class="flex flex-col">
-                            <span>{{ conditionalReverse([item.name, item.kennel], item.kennelNameFirst).join(' ') }}</span>
+                            <span>{{ item.displayName || '—' }}</span>
                             <span class="text-xs text-muted">Chip: <b>{{ item.chipNumber || '—' }}</b> ZB: <b>{{ item.studbookNumber || '—' }}</b></span>
                         </div>
                     </div>

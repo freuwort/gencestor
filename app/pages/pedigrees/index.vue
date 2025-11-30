@@ -25,7 +25,7 @@
         <div class="flex justify-between border-t border-default p-4">
             <UPagination
                 active-color="neutral"
-                :default-page="pagination.page + 1"
+                :default-page="pagination.page"
                 :items-per-page="pagination.size"
                 :total="pagination.totalItems"
                 @update:page="(p) => pagination.page = p"
@@ -54,7 +54,7 @@
     const query = ref('')
     const items = ref<any[]>([])
     const pagination = ref({
-        page: 0,
+        page: 1,
         size: 50,
         totalPages: 10,
         totalItems: 0,
@@ -67,13 +67,8 @@
     const UDropdownMenu = resolveComponent('UDropdownMenu')
     const columns: TableColumn<Pedigree>[] = [
         {
-            accessorKey: 'title',
-            header: 'Wurfname',
-            cell: info => info.getValue() || '—',
-        },
-        {
-            accessorKey: 'kennel',
-            header: 'Zwingername',
+            accessorKey: 'displayName',
+            header: 'Ahnentafel',
             cell: info => info.getValue() || '—',
         },
         {

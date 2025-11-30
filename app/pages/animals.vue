@@ -15,15 +15,18 @@
                 <template #name-cell="{ row }">
                     <div class="flex gap-3 items-center">
                         <AppSexIcon class="w-8 h-8" :sex="row.original.sex" />
-                        {{ conditionalReverse([row.original.name, row.original.kennel], row.original.kennelNameFirst).join(' ') || '—' }}
+                        <div class="flex flex-col">
+                            <span>{{ row.original.displayName || '—' }}</span>
+                            <NuxtLink class="text-sm text-info hover:underline" :to="`/pedigrees/${row.original.pedigreeId}`"  v-if="row.original.pedigreeId !== null">Zur Ahnentafel</NuxtLink>
+                        </div>
                     </div>
                 </template>
                 <template #father-cell="{ row }">
-                    <span v-if="row.original.father">{{ conditionalReverse([row.original.father.name, row.original.father.kennel], row.original.father.kennelNameFirst).join(' ')}}</span>
+                    <span v-if="row.original.father">{{ row.original.father.displayName || '—' }}</span>
                     <span v-else>—</span>
                 </template>
                 <template #mother-cell="{ row }">
-                    <span v-if="row.original.mother">{{ conditionalReverse([row.original.mother.name, row.original.mother.kennel], row.original.mother.kennelNameFirst).join(' ')}}</span>
+                    <span v-if="row.original.mother">{{ row.original.mother.displayName || '—' }}</span>
                     <span v-else>—</span>
                 </template>
                 <template #action-cell="{ row }">
@@ -39,7 +42,7 @@
         <div class="flex justify-between border-t border-default p-4">
             <UPagination
                 active-color="neutral"
-                :default-page="pagination.page + 1"
+                :default-page="pagination.page"
                 :items-per-page="pagination.size"
                 :total="pagination.totalItems"
                 @update:page="(p) => pagination.page = p"
@@ -68,7 +71,7 @@
     const query = ref('')
     const items = ref<any[]>([])
     const pagination = ref({
-        page: 0,
+        page: 1,
         size: 50,
         totalPages: 10,
         totalItems: 0,

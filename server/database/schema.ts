@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
-import { relations, sql } from 'drizzle-orm'
+import { relations, SQL, sql } from 'drizzle-orm'
 
 export const settings = sqliteTable('settings', {
     key: text('key').primaryKey().unique(),
@@ -8,6 +8,7 @@ export const settings = sqliteTable('settings', {
 
 export const pedigrees = sqliteTable('pedigrees', {
     id: integer('id').primaryKey({ autoIncrement: true }),
+    displayName: text('display_name').generatedAlwaysAs((): SQL => sql`trim(${pedigrees.title} || ' - ' || ${pedigrees.kennel})`),
     title: text('title'),
     kennel: text('kennel'),
     address: text('address'),
@@ -24,6 +25,7 @@ export const animals = sqliteTable('animals', {
     name: text('name'),
     kennel: text('kennel'),
     kennelNameFirst: integer('kennel_name_first', { mode: 'boolean' }).notNull().default(false),
+    displayName: text('display_name').generatedAlwaysAs((): SQL => sql`CASE WHEN ${animals.kennelNameFirst} = 1 THEN trim(${animals.kennel} || ' ' || ${animals.name}) ELSE trim(${animals.name} || ' ' || ${animals.kennel}) END`),
     awardsLength1: text('awards_length_1'),
     awardsLength2: text('awards_length_2'),
     awardsLength3: text('awards_length_3'),

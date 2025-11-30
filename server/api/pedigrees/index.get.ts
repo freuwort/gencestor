@@ -12,10 +12,8 @@ export default defineEventHandler(async (event) => {
     const dbQuery = []
 
     if (requestQuery.query) {
-        // TODO: Fuzzy search
         dbQuery.push(or(
-            like(tables.pedigrees.title, `%${requestQuery.query}%`),
-            like(tables.pedigrees.kennel, `%${requestQuery.query}%`),
+            like(tables.pedigrees.displayName, `%${requestQuery.query}%`),
             like(tables.pedigrees.address, `%${requestQuery.query}%`),
         ))
     }

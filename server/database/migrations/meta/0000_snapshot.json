@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "104763f0-a3e5-4d88-901e-b87c52a4ba75",
+  "id": "4f432ea2-6381-46b7-99e7-eb094b7eccdd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "animals": {
@@ -57,6 +57,17 @@
           "autoincrement": false,
           "default": false
         },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "generated": {
+            "as": "(CASE WHEN \"kennel_name_first\" = 1 THEN trim(\"kennel\" || ' ' || \"name\") ELSE trim(\"name\" || ' ' || \"kennel\") END)",
+            "type": "virtual"
+          }
+        },
         "awards_length_1": {
           "name": "awards_length_1",
           "type": "text",
@@ -94,7 +105,7 @@
         },
         "birth_date": {
           "name": "birth_date",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -184,8 +195,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "set null",
+          "onUpdate": "cascade"
         },
         "animals_mother_id_animals_id_fk": {
           "name": "animals_mother_id_animals_id_fk",
@@ -197,8 +208,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "set null",
+          "onUpdate": "cascade"
         },
         "animals_father_id_animals_id_fk": {
           "name": "animals_father_id_animals_id_fk",
@@ -210,8 +221,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "set null",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -227,6 +238,17 @@
           "primaryKey": true,
           "notNull": true,
           "autoincrement": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "generated": {
+            "as": "(trim(\"title\" || ' ' || \"kennel\"))",
+            "type": "virtual"
+          }
         },
         "title": {
           "name": "title",

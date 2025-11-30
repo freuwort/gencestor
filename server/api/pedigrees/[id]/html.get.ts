@@ -1,5 +1,4 @@
 import type { PedigreeResource } from '~~/types/pedigree'
-import puppeteer from 'puppeteer'
 import { z } from 'zod'
 
 const requestParamsSchema = z.object({
@@ -49,10 +48,10 @@ export default defineEventHandler(async (event) => {
             mother: motherTree,
         }))
 
-    return await generatePdf(await render(data, {
+    return await render(data, {
         printFront: requestQuery.printFront,
         printBack: requestQuery.printBack,
-    }))
+    })
 })
 
 function formatTree(animal: any): any {
@@ -98,16 +97,6 @@ async function render(data: any, options: { printFront?: boolean; printBack?: bo
         if (options?.printBack !== false) content += hydrate(TemplatePedigreeBack, assets, entry)
     }
     return hydrate(TemplatePedigreeBase, assets, {...lastData, content})
-}
-
-async function generatePdf(html: string): Promise<Uint8Array> {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']})
-    const page = await browser.newPage()
-    await page.setContent(html, { waitUntil: 'networkidle0' })
-    const pdfBuffer = await page.pdf({ format: 'A4', landscape: true, height: '210mm', width: '297mm', printBackground: true })
-    await browser.close()
-
-    return pdfBuffer
 }
 
 function hydrate(template: string, assets: any, data: any): string {
