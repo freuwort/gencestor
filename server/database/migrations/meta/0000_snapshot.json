@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4f432ea2-6381-46b7-99e7-eb094b7eccdd",
+  "id": "5a0012e6-df26-4217-a9c9-cc5e4e4f9d11",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "animals": {
@@ -246,7 +246,7 @@
           "notNull": false,
           "autoincrement": false,
           "generated": {
-            "as": "(trim(\"title\" || ' ' || \"kennel\"))",
+            "as": "(trim(\"title\" || ' - ' || \"kennel\"))",
             "type": "virtual"
           }
         },

@@ -7,13 +7,11 @@
 }
 
 :root {
-    --ui-primary: var(--color-indigo-500);
-    /* TODO: Blue 800 für prod */
+    --ui-primary: var(--color-blue-800);
 }
 
 .dark {
-    --ui-primary: var(--color-indigo-400);
-    /* TODO: Blue 500 für prod */
+    --ui-primary: var(--color-blue-500);
 }
 
 #__nuxt {

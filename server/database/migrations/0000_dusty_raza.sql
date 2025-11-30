@@ -30,7 +30,7 @@ CREATE TABLE `animals` (
 --> statement-breakpoint
 CREATE TABLE `pedigrees` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`display_name` text GENERATED ALWAYS AS (trim("title" || ' ' || "kennel")) VIRTUAL,
+	`display_name` text GENERATED ALWAYS AS (trim("title" || ' - ' || "kennel")) VIRTUAL,
 	`title` text,
 	`kennel` text,
 	`address` text,

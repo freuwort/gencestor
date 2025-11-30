@@ -125,8 +125,6 @@
         }
         isOpen.value = true
         startDuplicateCheck()
-
-        console.log(form.value)
     }
 
     function buildParentsFromTree(tree: any[][]): any[] {

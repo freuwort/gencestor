@@ -16,8 +16,19 @@ WORKDIR /app
 
 COPY --from=build-stage /app/.output ./.output
 COPY --from=build-stage /app/node_modules ./node_modules
+COPY --from=build-stage /app/server/database/migrations ./server/database/migrations
 COPY --from=build-stage /app/package*.json ./
+COPY --from=build-stage /app/drizzle.config.ts ./
+COPY --from=build-stage /app/run.sh ./
 
-EXPOSE 3000
+RUN mkdir -p ./.data
+RUN chmod +x ./run.sh
 
-CMD ["node", ".output/server/index.mjs"]
+RUN apk add --no-cache \
+    udev \
+    ttf-freefont \
+    chromium
+
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+ENTRYPOINT ["./run.sh"]

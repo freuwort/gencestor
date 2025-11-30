@@ -101,7 +101,7 @@ async function render(data: any, options: { printFront?: boolean; printBack?: bo
 }
 
 async function generatePdf(html: string): Promise<Uint8Array> {
-    const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']})
+    const browser = await puppeteer.launch({executablePath: process.env.PUPPETEER_EXECUTABLE_PATH, args: ['--no-sandbox', '--disable-setuid-sandbox']})
     const page = await browser.newPage()
     await page.setContent(html, { waitUntil: 'networkidle0' })
     const pdfBuffer = await page.pdf({ format: 'A4', landscape: true, height: '210mm', width: '297mm', printBackground: true })
