@@ -30,5 +30,6 @@ RUN apk add --no-cache \
     chromium
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 ENTRYPOINT ["./run.sh"]

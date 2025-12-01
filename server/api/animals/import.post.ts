@@ -1,4 +1,4 @@
-import { eq, isNotNull } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { z } from 'zod'
 
 const requestBodySchema = z.object({
@@ -28,43 +28,93 @@ const requestBodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
     const requestBody = await readValidatedBody(event, requestBodySchema.parse)
+    const db = useDrizzle()
 
-    // First, insert all animals but without parent references
-    for (const animalData of requestBody.data) {
-        await useDrizzle()
-            .insert(tables.animals)
-            .values(animalData)
-    }
-
-    // Then get the inserted animals to build a legacyId -> id dictionary
-    const animalsWithLegacyIds = await useDrizzle()
-        .select()
-        .from(tables.animals)
-        .where(isNotNull(tables.animals.legacyId))
-        .all()
-
-    const idDictionary: Record<string, number> = {}
-    for (const animal of animalsWithLegacyIds) {
-        idDictionary[animal.legacyId!] = animal.id
-    }
-    
-    // Finally, update the parent references based on the legacy IDs
-    for (const animalData of requestBody.data) {
-        const updates: Partial<Animal> = {}
-
-        if (animalData.legacyFatherId && idDictionary[animalData.legacyFatherId]) {
-            updates.fatherId = idDictionary[animalData.legacyFatherId]
+    return await db.transaction(async (tx) => {
+        // First, insert all animals in optimized chunks without parent references
+        const chunkSize = 500 // Reduced chunk size for better memory management
+        const insertedLegacyIds = new Set<string>()
+        
+        for (let i = 0; i < requestBody.data.length; i += chunkSize) {
+            const chunk = requestBody.data.slice(i, i + chunkSize)
+            
+            // Prepare data without parent references and collect legacy IDs
+            const insertData = chunk.map(item => {
+                const { legacyFatherId, legacyMotherId, ...animalData } = item
+                if (animalData.legacyId) {
+                    insertedLegacyIds.add(animalData.legacyId)
+                }
+                return animalData
+            })
+            
+            await tx.insert(tables.animals).values(insertData)
         }
 
-        if (animalData.legacyMotherId && idDictionary[animalData.legacyMotherId]) {
-            updates.motherId = idDictionary[animalData.legacyMotherId]
+        // Collect all legacy IDs that are referenced as parents
+        const allReferencedLegacyIds = new Set<string>()
+        for (const animalData of requestBody.data) {
+            if (animalData.legacyFatherId) allReferencedLegacyIds.add(animalData.legacyFatherId)
+            if (animalData.legacyMotherId) allReferencedLegacyIds.add(animalData.legacyMotherId)
         }
 
-        if (Object.keys(updates).length <= 0) continue
+        // Only query for animals with legacy IDs that are actually referenced
+        const referencedLegacyIdsArray = Array.from(allReferencedLegacyIds)
+        let idDictionary: Record<string, number> = {}
+        
+        if (referencedLegacyIdsArray.length > 0) {
+            // Process in chunks to avoid SQL query limits
+            const queryChunkSize = 999 // SQLite IN clause limit
+            for (let i = 0; i < referencedLegacyIdsArray.length; i += queryChunkSize) {
+                const queryChunk = referencedLegacyIdsArray.slice(i, i + queryChunkSize)
+                const animals = await tx
+                    .select({ id: tables.animals.id, legacyId: tables.animals.legacyId })
+                    .from(tables.animals)
+                    .where(inArray(tables.animals.legacyId, queryChunk))
 
-        await useDrizzle()
-            .update(tables.animals)
-            .set(updates)
-            .where(eq(tables.animals.legacyId, animalData.legacyId!))
-    }
+                for (const animal of animals) {
+                    if (animal.legacyId) {
+                        idDictionary[animal.legacyId] = animal.id
+                    }
+                }
+            }
+        }
+        
+        // Batch update parent references
+        const updateBatches: Array<{legacyId: string, updates: Partial<Animal>}> = []
+        
+        for (const animalData of requestBody.data) {
+            if (!animalData.legacyId) continue
+            
+            const updates: Partial<Animal> = {}
+
+            if (animalData.legacyFatherId && idDictionary[animalData.legacyFatherId]) {
+                updates.fatherId = idDictionary[animalData.legacyFatherId]
+            }
+
+            if (animalData.legacyMotherId && idDictionary[animalData.legacyMotherId]) {
+                updates.motherId = idDictionary[animalData.legacyMotherId]
+            }
+
+            if (Object.keys(updates).length > 0) {
+                updateBatches.push({ legacyId: animalData.legacyId, updates })
+            }
+        }
+
+        // Execute updates in chunks to avoid memory issues
+        const updateChunkSize = 100
+        for (let i = 0; i < updateBatches.length; i += updateChunkSize) {
+            const updateChunk = updateBatches.slice(i, i + updateChunkSize)
+            
+            // Execute updates in parallel for better performance
+            await Promise.all(
+                updateChunk.map(({ legacyId, updates }) =>
+                    tx.update(tables.animals)
+                        .set(updates)
+                        .where(eq(tables.animals.legacyId, legacyId))
+                )
+            )
+        }
+
+        return { imported: requestBody.data.length, updated: updateBatches.length }
+    })
 })
