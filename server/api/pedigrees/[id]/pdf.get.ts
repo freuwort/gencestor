@@ -84,8 +84,9 @@ async function render(data: any, options: { printFront?: boolean; printBack?: bo
             drv_logo: await loadAssetAsDataUrl('images/drv.png'),
         },
         fonts: {
-            headline: await loadAssetAsDataUrl('fonts/matura.ttf'),
-            text: await loadAssetAsDataUrl('fonts/open-sans-variable.ttf'),
+            matura: await loadAssetAsDataUrl('fonts/Matura.ttf'),
+            open_sans_semibold: await loadAssetAsDataUrl('fonts/OpenSans-SemiBold.ttf'),
+            open_sans_extrabold: await loadAssetAsDataUrl('fonts/OpenSans-ExtraBold.ttf'),
         },
     }
 

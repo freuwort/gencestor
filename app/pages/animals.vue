@@ -155,7 +155,7 @@
             {
                 label: 'Duplizieren',
                 icon: 'i-lucide-copy-plus',
-                onSelect: () => editAnimal.value.open({ ...row.original, id: null }),
+                onSelect: () => editAnimal.value.open({ ...row.original, id: null, pedigreeId: null }),
             },
             { type: 'separator', },
             {

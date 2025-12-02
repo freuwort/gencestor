@@ -1,4 +1,4 @@
-import { and, desc, inArray, like, notInArray, or } from 'drizzle-orm'
+import { and, asc, desc, inArray, like, notInArray, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 const requestQuerySchema = z.object({
@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
 
     const results = await useDrizzle().query.pedigrees.findMany({
         where: and(...dbQuery),
-        orderBy: desc(tables.pedigrees.createdAt),
+        orderBy: asc(tables.pedigrees.title),
     })
     
     return usePaginate(results, requestQuery.page, requestQuery.size)

@@ -1,8 +1,8 @@
 <template>
     <UTabs :items="tabs" variant="link" :ui="{root: 'w-full max-w-[750px] mx-auto gap-0', content: 'flex flex-col gap-4 p-4', list: 'px-4 py-0', trigger: 'py-5'}">
-        <template #general>
+        <template #pedigree>
             <form @submit.prevent="settingsStore.save" v-if="settingsStore.settings" class="contents">
-                <UTextarea v-model="settingsStore.settings['general.notes']" placeholder="Notizen" leading-icon="i-lucide-notebook" />
+                <UTextarea v-model="settingsStore.settings['general.notes']" placeholder="Bemerkungen" leading-icon="i-lucide-notebook" />
                 <UButton class="ml-auto" variant="subtle" color="neutral" type="submit" :loading="settingsStore.isLoading">Speichern</UButton>
             </form>
         </template>
@@ -63,9 +63,9 @@
 
     const tabs = computed(() => [
         {
-            label: 'Allgemeines',
-            icon: 'i-lucide-settings',
-            slot: 'general',
+            label: 'Ahnentafeln',
+            icon: 'i-lucide-book-open',
+            slot: 'pedigree',
         },
         {
             label: 'Import',

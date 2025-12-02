@@ -11,13 +11,20 @@
     <style>
         @font-face {
             font-family: "Matura MT Script Capitals";
-            src: url("${assets?.fonts?.headline}") format("truetype");
+            src: url("${assets?.fonts?.matura}") format("truetype");
             font-weight: 700;
             font-style: normal;
         }
         @font-face {
             font-family: "Open Sans";
-            src: url("${assets?.fonts?.text}") format("truetype");
+            src: url("${assets?.fonts?.open_sans_semibold}") format("truetype");
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: "Open Sans";
+            src: url("${assets?.fonts?.open_sans_extrabold}") format("truetype");
+            font-weight: 800;
             font-style: normal;
         }
 
@@ -35,7 +42,7 @@
             margin: 0mm;
             font-family: "Open Sans", sans-serif;
             line-height: 1.25;
-            font-weight: 400;
+            font-weight: 600;
         }
         main {
             display: flex;
@@ -84,7 +91,7 @@
         .page-front-left,
         .page-front-right,
         .page-back {
-            flex: 1;
+            width: 50%;
             align-self: stretch;
             overflow: hidden;
         }
@@ -96,10 +103,10 @@
 
 
         .page-front-left {
-            margin-top: 5mm;
-            margin-right: 12mm;
-            margin-bottom: 5mm;
-            margin-left: 5mm;
+            padding-top: 5mm;
+            padding-right: 12mm;
+            padding-bottom: 5mm;
+            padding-left: 5mm;
             font-size: 9pt;
         }
         .page-front-left .separator {
@@ -112,10 +119,10 @@
 
 
         .page-front-right {
-            margin-top: 5mm;
-            margin-right: 5mm;
-            margin-bottom: 5mm;
-            margin-left: 4mm;
+            padding-top: 5mm;
+            padding-right: 5mm;
+            padding-bottom: 5mm;
+            padding-left: 5mm;
             font-size: 11pt;
         }
         .page-front-right .inner-page {
@@ -129,7 +136,7 @@
             margin-bottom: auto;
             display: grid;
             line-height: 1.1;
-            grid-template-columns: 40mm 1fr 32mm 13mm;
+            grid-template-columns: 40mm 1fr 26mm 13mm;
             grid-template-rows: auto auto auto auto auto auto auto auto;
             grid-row-gap: 7mm;
             grid-template-areas:
@@ -186,10 +193,11 @@
 
 
         .page-back {
-            margin-top: 5mm;
-            margin-right: 5mm;
-            margin-bottom: 5mm;
-            margin-left: 5mm;
+            width: 100%;
+            padding-top: 5mm;
+            padding-right: 5mm;
+            padding-bottom: 5mm;
+            padding-left: 5mm;
             font-size: 9pt;
         }
         .page-back .inner-page {
@@ -275,7 +283,7 @@
             display: grid;
             grid-auto-rows: min-content;
             grid-template-columns: 1fr auto;
-            font-size: 7.5pt;
+            font-size: 7pt;
         }
         .page-back .cell.gen-3 > strong {
             grid-column: span 2;
@@ -289,7 +297,7 @@
             grid-auto-rows: min-content;
             grid-template-columns: auto auto auto;
             justify-content: space-between;
-            font-size: 7.5pt;
+            font-size: 7pt;
             line-height: 1;
         }
         .page-back .cell.gen-4 > strong {
