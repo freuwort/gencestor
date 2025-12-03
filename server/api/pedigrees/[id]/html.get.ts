@@ -59,6 +59,8 @@ function formatTree(animal: any): any {
 
     return {
         ...animal,
+        size: animal.size ? `${animal.size} cm` : null,
+        sizeInline: animal.size ? `<b>Gr.: ${animal.size} cm; </b>` : null,
         displayName: animal.kennelNameFirst ? `${animal.kennel} ${animal.name}` : `${animal.name} ${animal.kennel}`,
         birthDate: useGermanDate(animal.birthDate),
         sex: useSexEnum(animal.sex),
@@ -83,8 +85,9 @@ async function render(data: any, options: { printFront?: boolean; printBack?: bo
             drv_logo: await loadAssetAsDataUrl('images/drv.png'),
         },
         fonts: {
-            headline: await loadAssetAsDataUrl('fonts/matura.ttf'),
-            text: await loadAssetAsDataUrl('fonts/open-sans-variable.ttf'),
+            matura: await loadAssetAsDataUrl('fonts/Matura.ttf'),
+            open_sans_semibold: await loadAssetAsDataUrl('fonts/OpenSans-SemiBold.ttf'),
+            open_sans_extrabold: await loadAssetAsDataUrl('fonts/OpenSans-ExtraBold.ttf'),
         },
     }
 

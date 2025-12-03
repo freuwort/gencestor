@@ -86,7 +86,7 @@
         .border {
             image-rendering: pixelated;
             border: 7mm solid transparent;
-            border-image: url("${assets?.images?.border}") 80 round;
+            border-image: url("${assets?.images?.border}") 81 round;
         }
         .page-front-left,
         .page-front-right,
@@ -283,7 +283,6 @@
             display: grid;
             grid-auto-rows: min-content;
             grid-template-columns: 1fr auto;
-            font-size: 7pt;
         }
         .page-back .cell.gen-3 > strong {
             grid-column: span 2;
@@ -297,8 +296,7 @@
             grid-auto-rows: min-content;
             grid-template-columns: auto auto auto;
             justify-content: space-between;
-            font-size: 7pt;
-            line-height: 1;
+            line-height: 1.1;
         }
         .page-back .cell.gen-4 > strong {
             grid-column: span 3;

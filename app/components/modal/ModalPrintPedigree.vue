@@ -14,12 +14,7 @@
 
         <template #footer>
             <div class="flex-1 flex flex-row-reverse">
-                <UFieldGroup>
-                    <UButton label="Drucken" @click="print()" :loading="isLoading" :disabled="disabled" />
-                    <UDropdownMenu :items="printItems" arrow>
-                        <UButton icon="i-lucide-chevron-down" :disabled="disabled" />
-                    </UDropdownMenu>
-                </UFieldGroup>
+                <UButton label="Drucken" @click="print()" :loading="isLoading" :disabled="disabled" />
                 <div class="flex-1"></div>
                 <UButton label="Abbrechen" variant="outline" @click="close" />
             </div>
@@ -56,7 +51,7 @@
         query.append('printBack', printBack.value ? '1' : '')
         selectedIds.value.forEach((id: number) => query.append('include', id.toString()))
 
-        return `/api/pedigrees/${form.value.id}/pdf?${query.toString()}`
+        return `/api/pedigrees/${form.value.id}/html?${query.toString()}`
     })
 
     const emit = defineEmits([
@@ -89,10 +84,6 @@
             })
         },
     ]
-
-    const printItems = ref([
-        { label: 'PDF herunterladen', icon: 'i-lucide-download', onSelect: () => download() },
-    ])
 
 
 
@@ -129,7 +120,7 @@
         printBack.value = true
     }
 
-    function print() {
+    async function print() {
         isLoading.value = true
         const iframe = document.createElement('iframe')
         iframe.src = pdfUrl.value
@@ -141,18 +132,6 @@
             isLoading.value = false
             emit('printed')
         }
-    }
-
-    function download() {
-        isLoading.value = true
-        const link = document.createElement('a')
-        link.href = pdfUrl.value
-        link.download = title.value+'.pdf'
-        anchor.value?.appendChild(link)
-        link.click()
-        anchor.value?.removeChild(link)
-        isLoading.value = false
-        emit('downloaded')
     }
 
     defineExpose({

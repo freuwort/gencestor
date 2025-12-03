@@ -6,7 +6,7 @@ CREATE TABLE `animals` (
 	`name` text,
 	`kennel` text,
 	`kennel_name_first` integer DEFAULT false NOT NULL,
-	`display_name` text GENERATED ALWAYS AS (CASE WHEN "kennel_name_first" = 1 THEN trim("kennel" || ' ' || "name") ELSE trim("name" || ' ' || "kennel") END) VIRTUAL,
+	`display_name` text GENERATED ALWAYS AS (CASE WHEN "kennel_name_first" = 1 THEN trim(COALESCE("kennel", '') || ' ' || COALESCE("name", '')) ELSE trim(COALESCE("name", '') || ' ' || COALESCE("kennel", '')) END) VIRTUAL,
 	`awards_length_1` text,
 	`awards_length_2` text,
 	`awards_length_3` text,
@@ -30,7 +30,8 @@ CREATE TABLE `animals` (
 --> statement-breakpoint
 CREATE TABLE `pedigrees` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`display_name` text GENERATED ALWAYS AS (trim("title" || ' - ' || "kennel")) VIRTUAL,
+	`display_name` text GENERATED ALWAYS AS (trim(COALESCE("title", '') || ' ' || COALESCE("kennel", ''))) VIRTUAL,
+	`breeder` text,
 	`title` text,
 	`kennel` text,
 	`address` text,

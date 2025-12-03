@@ -118,7 +118,7 @@
         {
             accessorKey: 'size',
             header: 'Größe',
-            cell: info => info.getValue() || '—',
+            cell: info => info.getValue() ? `${info.getValue()} cm` : '—',
         },
         {
             accessorKey: 'hairType',

@@ -84,7 +84,9 @@
                             <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Haarfarbe entfernen" @click="form.hairColor = null" :disabled="!form.hairColor || disabled.includes('hairColor')" />
                         </div>
                         <div class="flex items-center gap-1" v-if="!hidden.includes('size')">
-                            <UInput class="flex-1" v-model="form.size" placeholder="Größe" leading-icon="i-lucide-ruler" :disabled="disabled.includes('size')" />
+                            <UInput class="flex-1" v-model="form.size" placeholder="Größe" leading-icon="i-lucide-ruler" :disabled="disabled.includes('size')">
+                                <template #trailing><span class="text-sm text-muted">cm</span></template>
+                            </UInput>
                             <UButton color="neutral" variant="ghost" size="sm" icon="i-lucide-x" aria-label="Größe entfernen" @click="form.size = null" :disabled="!form.size || disabled.includes('size')" />
                         </div>
                     </div>

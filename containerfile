@@ -24,12 +24,6 @@ COPY --from=build-stage /app/run.sh ./
 RUN mkdir -p ./.data
 RUN chmod +x ./run.sh
 
-RUN apk add --no-cache \
-    udev \
-    ttf-freefont \
-    chromium
-
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 
 ENTRYPOINT ["./run.sh"]

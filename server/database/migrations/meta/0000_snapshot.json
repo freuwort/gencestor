@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "5a0012e6-df26-4217-a9c9-cc5e4e4f9d11",
+  "id": "5ad3cee8-d55e-46d1-8444-a1c5a620f050",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "animals": {
@@ -64,7 +64,7 @@
           "notNull": false,
           "autoincrement": false,
           "generated": {
-            "as": "(CASE WHEN \"kennel_name_first\" = 1 THEN trim(\"kennel\" || ' ' || \"name\") ELSE trim(\"name\" || ' ' || \"kennel\") END)",
+            "as": "(CASE WHEN \"kennel_name_first\" = 1 THEN trim(COALESCE(\"kennel\", '') || ' ' || COALESCE(\"name\", '')) ELSE trim(COALESCE(\"name\", '') || ' ' || COALESCE(\"kennel\", '')) END)",
             "type": "virtual"
           }
         },
@@ -246,9 +246,16 @@
           "notNull": false,
           "autoincrement": false,
           "generated": {
-            "as": "(trim(\"title\" || ' - ' || \"kennel\"))",
+            "as": "(trim(COALESCE(\"title\", '') || ' ' || COALESCE(\"kennel\", '')))",
             "type": "virtual"
           }
+        },
+        "breeder": {
+          "name": "breeder",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "title": {
           "name": "title",
