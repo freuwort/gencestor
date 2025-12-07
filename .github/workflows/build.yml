@@ -1,5 +1,6 @@
 name: Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
@@ -7,6 +8,10 @@ on:
 env:
   IMAGE: gencestor
   REGISTRY: ghcr.io/freuwoert
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
