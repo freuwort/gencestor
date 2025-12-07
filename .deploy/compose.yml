@@ -1,0 +1,67 @@
+networks:
+  gencestor:
+    name: gencestor_network
+    driver: bridge
+
+volumes:
+  acme:
+  html:
+
+services:
+  # Auto update containers
+  watchtower:
+    image: nickfedor/watchtower:latest
+    container_name: gencestor_watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - gencestor
+    command: --cleanup --interval 60
+
+  # Reverse Proxy with tls termination
+  nginx-proxy:
+    image: jwilder/nginx-proxy:latest
+    container_name: gencestor_nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - html:/usr/share/nginx/html:rw
+      - ./certs:/etc/nginx/certs:rw
+      - ./vhost.d:/etc/nginx/vhost.d:rw
+      - ./htpasswd:/etc/nginx/htpasswd:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - gencestor
+
+  # TLS certificate management
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion:latest
+    container_name: gencestor_nginx_proxy_acme
+    restart: unless-stopped
+    environment:
+      - DEFAULT_EMAIL=kontakt@drvev.de
+    volumes_from:
+      - nginx-proxy:rw
+    volumes:
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - gencestor
+
+  # Gencestor Application
+  gencestor:
+    image: ghcr.io/freuwoert/gencestor:latest
+    container_name: gencestor_app
+    restart: unless-stopped
+    environment:
+      - VIRTUAL_HOST=gencestor.drvev.de
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=gencestor.drvev.de
+      - LETSENCRYPT_EMAIL=kontakt@drvev.de
+    volumes:
+      - ./data:/app/.data:rw
+    networks:
+      - gencestor
