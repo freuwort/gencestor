@@ -15,8 +15,8 @@
             <div class="flex-1"></div>
             <UButton label="Drucken" size="lg" icon="i-lucide-printer" @click="printPedigree.open(form)" :loading="isLoading" />
         </div>
-        <div class="h-full flex-1 flex flex-col gap-4 overflow-auto">
-            <UTabs :items="tabs" variant="link" :ui="{root: 'h-full flex-1 gap-0', content: 'h-full flex-1 p-4', list: 'px-4 py-0', trigger: 'py-5'}">
+        <div class="h-full flex-1 flex flex-col gap-4">
+            <UTabs :items="tabs" variant="link" :ui="{root: 'h-full flex-1 gap-0', content: 'h-full flex-1 p-4 overflow-auto', list: 'px-4 py-0', trigger: 'py-5'}">
                 <template #puppies>
                     <UContextMenu :items="contextMenuItems" arrow>
                         <UTable class="h-full flex-1 rounded-lg border border-default" sticky :data="form.animals" :columns="columns" @select="onSelect" @contextmenu="onContextMenu">
@@ -47,32 +47,7 @@
                     </UContextMenu>
                 </template>
                 <template #family-tree>
-                    <div class="flex-1 flex flex-col gap-2 pl-4">
-                        <div class="flex-1 relative">
-                            <template v-if="form.father">
-                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.fatherId = null; form.father = null"/>
-                                <AppTreeBuilder :animal="form.father" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent" />
-                            </template>
-                            <UFieldGroup class="w-80" size="sm" v-else>
-                                <UButton class="flex-1" icon="i-lucide-plus" variant="subtle" @click="createParent({role: 'father', child: 'NONE'})">Vater erstellen</UButton>
-                                <AppAnimalSelect @select="assignParent({parent: $event, role: 'father', child: 'NONE'})" :sex="['male', 'unknown']">
-                                    <UButton class="flex-1" icon="i-lucide-search" variant="outline">Vater suchen</UButton>
-                                </AppAnimalSelect>
-                            </UFieldGroup>
-                        </div>
-                        <div class="flex-1 relative">
-                            <template v-if="form.mother">
-                                <UButton class="rounded-full absolute top-1/2 -translate-y-1/2 -left-4" icon="i-lucide-unlink" size="xs" color="neutral" variant="outline" @click="form.motherId = null; form.mother = null"/>
-                                <AppTreeBuilder :animal="form.mother" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent" />
-                            </template>
-                            <UFieldGroup class="w-80" size="sm" v-else>
-                                <UButton class="flex-1" icon="i-lucide-plus" variant="subtle" @click="createParent({role: 'mother', child: 'NONE'})">Mutter erstellen</UButton>
-                                <AppAnimalSelect @select="assignParent({parent: $event, role: 'mother', child: 'NONE'})" :sex="['female', 'unknown']">
-                                    <UButton class="flex-1" icon="i-lucide-search" variant="outline">Mutter suchen</UButton>
-                                </AppAnimalSelect>
-                            </UFieldGroup>
-                        </div>
-                    </div>
+                    <AppTreeBuilder :father="form.father" :mother="form.mother" :child="null" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent"/>
                 </template>
                 <template #preview>
                     <AppPedigreePreview class="h-full" ref="previewPedigree" :pedigree="form" />
@@ -255,13 +230,16 @@
     }
 
     async function assignParent(e: {parent: Partial<AnimalResource>, role: 'father' | 'mother', child: Partial<AnimalResource> | 'NONE'}) {
-        if (e.child === 'NONE') {
-            e.role === 'father'
-                ? form.value.fatherId = e.parent.id
-                : form.value.motherId = e.parent.id
+        if (e.child === 'NONE' && e.role === 'father') {
+            form.value.fatherId = e.parent.id
+            if (e.parent.id === null) form.value.father = null
+        }
+        else if (e.child === 'NONE' && e.role === 'mother') {
+            form.value.motherId = e.parent.id
+            if (e.parent.id === null) form.value.mother = null
         }
         else {
-            await $fetch('/api/animals/'+e.child.id, {
+            await $fetch('/api/animals/'+(e.child as Partial<AnimalResource>).id, {
                 method: 'PUT',
                 body: e.role === 'father' ? { fatherId: e.parent.id } : { motherId: e.parent.id },
             })

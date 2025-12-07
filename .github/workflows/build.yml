@@ -6,7 +6,7 @@ on:
 
 env:
   IMAGE: gencestor
-  REGISTRY: ghcr.io/freuwort
+  REGISTRY: ghcr.io/freuwoert
 
 jobs:
   build:

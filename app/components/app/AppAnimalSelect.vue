@@ -2,7 +2,7 @@
     <UPopover arrow v-model:open="open">
         <slot></slot>
         <template #content>
-            <UCommandPalette :placeholder="props.placeholder" :groups="groups" :loading="isLoading" v-model:search-term="searchTerm" autofocus @update:model-value="select">
+            <UCommandPalette autofocus :placeholder="props.placeholder" :groups="groups" :loading="isLoading" v-model:search-term="searchTerm" @update:model-value="select" :ui="{viewport: 'max-h-80'}">
                 <template #item-label="{ item }">
                     <div class="flex gap-2 items-center">
                         <AppSexIcon :sex="item.sex" class="size-8" />
@@ -44,7 +44,7 @@
     const isLoading = ref(false)
     const searchTerm = ref('')
     const items = ref<any[]>([])
-    const searchTermDebounced = refDebounced(searchTerm, 200)
+    const searchTermDebounced = refDebounced(searchTerm, 300)
 
     async function fetch() {
         isLoading.value = true

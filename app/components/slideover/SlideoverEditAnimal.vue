@@ -197,8 +197,8 @@
                 sex: form.value.sex || '',
             }
         })
-    }, 1000)
-    watch(() => [form.value.name, form.value.kennel, form.value.breed, form.value.sex], fetchDuplicateAnimals, { immediate: false })
+    }, 300)
+    watch(() => [form.value.name, form.value.kennel, form.value.breed, form.value.sex], fetchDuplicateAnimals)
 
 
 

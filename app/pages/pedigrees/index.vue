@@ -11,7 +11,7 @@
         </div>
 
         <UContextMenu :items="contextMenuItems" arrow>
-            <UTable sticky :data="items" :columns="columns" @select="onSelect" @contextmenu="onContextMenu" class="flex-1">
+            <UTable sticky :data="items" :columns="columns" :loading="isLoading" @select="onSelect" @contextmenu="onContextMenu" class="flex-1">
                 <template #action-cell="{ row }">
                     <div class="flex items-center justify-end gap-1">
                         <UDropdownMenu :items="getActions(row)" arrow>
@@ -42,6 +42,7 @@
 
 <script lang="ts" setup>
     import dayjs from 'dayjs'
+    import { useDebounceFn } from '@vueuse/core'
     import type { ContextMenuItem, TableColumn } from '@nuxt/ui'
     import type { Row } from '@tanstack/vue-table'
 
@@ -53,10 +54,10 @@
     const editPedigree = ref()
     const query = ref('')
     const items = ref<any[]>([])
+    const isLoading = ref(false)
     const pagination = ref({
         page: 1,
         size: 50,
-        totalPages: 10,
         totalItems: 0,
     })
 
@@ -129,9 +130,10 @@
 
 
 
-
+    const debounceFetch = useDebounceFn(fetch, 300)
     async function fetch() {
-        const { items: results, page, size, totalPages, totalItems } = await $fetch('/api/pedigrees', {
+        isLoading.value = true
+        const { items: results, totalItems } = await $fetch('/api/pedigrees', {
             method: 'GET',
             params: {
                 page: pagination.value.page,
@@ -139,11 +141,9 @@
                 query: query.value,
             },
         })
+        isLoading.value = false
 
         items.value = results
-        pagination.value.page = page
-        pagination.value.size = size
-        pagination.value.totalPages = totalPages
         pagination.value.totalItems = totalItems
     }
 
@@ -156,9 +156,8 @@
         fetch()
     }
 
-    watch(query, () => fetch())
-    watch(() => pagination.value.page, () => fetch())
-    watch(() => pagination.value.size, () => fetch())
+    watch(query, debounceFetch)
+    watch(() => [pagination.value.page, pagination.value.size], fetch)
 
     onMounted(() => fetch())
 </script>
