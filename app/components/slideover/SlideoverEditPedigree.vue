@@ -2,7 +2,8 @@
     <USlideover :title="title" v-model:open="isOpen">
         <template #body>
             <div class="flex flex-col">
-                <UInput class="mt-2" v-model="form.title" placeholder="Wurfname" leading-icon="i-lucide-tag" />
+                <UInput class="mt-2" v-model="form.breeder" placeholder="Züchter" leading-icon="i-lucide-user" />
+                <UInput class="mt-4" v-model="form.title" placeholder="Wurfname" leading-icon="i-lucide-tag" />
                 <UInput class="mt-4" v-model="form.kennel" placeholder="Zwingername" leading-icon="i-lucide-book-user" />
                 <UTextarea class="mt-4" v-model="form.address" placeholder="Adresse" leading-icon="i-lucide-map-pin" />
             </div>
@@ -24,8 +25,6 @@
 </template>
 
 <script lang="ts" setup>
-    import dayjs from 'dayjs'
-
     const isOpen = ref(false)
     const isLoading = ref(false)
     const isEditing = computed(() => form.value.id != null)
@@ -65,6 +64,7 @@
     function reset() {
         form.value = {
             id: null,
+            breeder: '',
             title: '',
             kennel: '',
             address: '',

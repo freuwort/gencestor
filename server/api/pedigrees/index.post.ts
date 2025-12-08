@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 const requestBodySchema = z.object({
+    breeder: z.string().max(255).optional().nullable(),
     title: z.string().max(255).optional().nullable(),
     kennel: z.string().max(255).optional().nullable(),
     address: z.string().max(255).optional().nullable(),

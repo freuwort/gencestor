@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
 
     if (requestQuery.query) {
         dbQuery.push(or(
+            like(tables.pedigrees.breeder, `%${requestQuery.query}%`),
             like(tables.pedigrees.displayName, `%${requestQuery.query}%`),
             like(tables.pedigrees.address, `%${requestQuery.query}%`),
         ))
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     const results = await useDrizzle().query.pedigrees.findMany({
         where: and(...dbQuery),
-        orderBy: asc(tables.pedigrees.title),
+        orderBy: asc(tables.pedigrees.breeder),
     })
     
     return usePaginate(results, requestQuery.page, requestQuery.size)

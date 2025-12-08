@@ -68,6 +68,11 @@
     const UDropdownMenu = resolveComponent('UDropdownMenu')
     const columns: TableColumn<Pedigree>[] = [
         {
+            accessorKey: 'breeder',
+            header: 'Züchter',
+            cell: info => info.getValue() || '—',
+        },
+        {
             accessorKey: 'displayName',
             header: 'Ahnentafel',
             cell: info => info.getValue() || '—',

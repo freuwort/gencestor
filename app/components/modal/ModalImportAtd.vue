@@ -3,6 +3,7 @@
         <template #body>
             <UTabs :items="tabs" variant="link" :ui="{root: 'gap-0', content: 'flex flex-col gap-2 py-4 px-6 h-120 overflow-y-auto', list: 'px-4 py-0', trigger: 'py-5'}">
                 <template #general>
+                    <UInput v-model="form.breeder" placeholder="Züchter" leading-icon="i-lucide-user" />
                     <UInput v-model="form.title" placeholder="Wurfname" leading-icon="i-lucide-type" />
                     <UInput v-model="form.kennel" placeholder="Zwinger" leading-icon="i-lucide-house">
                         <template #trailing>
@@ -105,6 +106,7 @@
         
         const parents = buildParentsFromTree(atd.tree || [])
         form.value = {
+            breeder: atd.address.split('\n')[0] || '',
             title: atd.title || '',
             kennel: atd.name || '',
             kennelNameFirst: atd.LNF || false,
@@ -206,6 +208,7 @@
         const pedigree = await $fetch('/api/pedigrees', {
             method: 'POST',
             body: {
+                breeder: form.value.breeder,
                 title: form.value.title,
                 kennel: form.value.kennel,
                 address: form.value.address,
@@ -233,6 +236,7 @@
         await $fetch('/api/pedigrees/' + pedigree?.id, {
             method: 'PUT',
             body: {
+                breeder: form.value.breeder,
                 title: form.value.title,
                 kennel: form.value.kennel,
                 address: form.value.address,

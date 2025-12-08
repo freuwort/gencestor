@@ -1,6 +1,7 @@
 <template>
     <div class="h-full flex items-stretch">
         <div class="w-96 flex flex-col gap-4 p-4 border-r border-default">
+            <UInput v-model="form.breeder" placeholder="Züchter" leading-icon="i-lucide-user" />
             <UInput v-model="form.title" placeholder="Wurfname" leading-icon="i-lucide-type" />
             <UInput v-model="form.kennel" placeholder="Zwinger" leading-icon="i-lucide-house">
                 <template #trailing>
@@ -47,7 +48,17 @@
                     </UContextMenu>
                 </template>
                 <template #family-tree>
-                    <AppTreeBuilder :father="form.father" :mother="form.mother" :child="null" :generation="1" @edit="openEditParent" @assignParent="assignParent" @createParent="createParent"/>
+                    <div class="family-tree-grid">
+                        <AppTreeBuilder
+                            :father="form.father"
+                            :mother="form.mother"
+                            :child="null"
+                            :generation="1"
+                            @edit="openEditParent"
+                            @assignParent="assignParent"
+                            @createParent="createParent"
+                        />
+                    </div>
                 </template>
                 <template #preview>
                     <AppPedigreePreview class="h-full" ref="previewPedigree" :pedigree="form" />
@@ -83,6 +94,7 @@
     const isLoading = ref(false)
     const formHash = ref('')
     const form = ref<Partial<PedigreeResource>>({
+        breeder: '',
         title: '',
         kennel: '',
         address: '',
@@ -316,5 +328,32 @@
     fetch()
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
+    .family-tree-grid {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        gap: .5rem;
+        align-items: stretch;
+        justify-content: stretch;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(16, 1fr);
+        grid-template-areas:
+        "m mm mmm mmmm"
+        "m mm mmm mmmf"
+        "m mm mmf mmfm"
+        "m mm mmf mmff"
+        "m mf mfm mfmm"
+        "m mf mfm mfmf"
+        "m mf mff mffm"
+        "m mf mff mfff"
+        "f fm fmm fmmm"
+        "f fm fmm fmmf"
+        "f fm fmf fmfm"
+        "f fm fmf fmff"
+        "f ff ffm ffmm"
+        "f ff ffm ffmf"
+        "f ff fff fffm"
+        "f ff fff ffff";
+    }
 </style>

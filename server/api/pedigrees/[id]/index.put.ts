@@ -6,6 +6,7 @@ const requestParamsSchema = z.object({
 })
 
 const requestBodySchema = z.object({
+    breeder: z.string().max(255).optional().nullable(),
     title: z.string().max(255).optional().nullable(),
     kennel: z.string().max(255).optional().nullable(),
     address: z.string().max(255).optional().nullable(),
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
     const result = await useDrizzle()
         .update(tables.pedigrees)
         .set({
+            breeder: requestBody.breeder,
             title: requestBody.title,
             kennel: requestBody.kennel,
             address: requestBody.address,
