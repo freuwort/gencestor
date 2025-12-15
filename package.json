@@ -13,24 +13,24 @@
     },
     "dependencies": {
         "@libsql/client": "^0.15.15",
-        "@nuxt/eslint": "^1.11.0",
-        "@nuxt/test-utils": "^3.20.1",
+        "@nuxt/eslint": "^1.12.1",
+        "@nuxt/test-utils": "^3.21.0",
         "@nuxt/ui": "^4.2.1",
         "@pinia/nuxt": "^0.11.3",
         "dayjs": "^1.11.19",
-        "drizzle-orm": "^0.44.7",
-        "eslint": "^9.39.1",
-        "nuxt": "^4.2.1",
+        "drizzle-orm": "^0.45.1",
+        "eslint": "^9.39.2",
+        "nuxt": "^4.2.2",
         "pinia": "^3.0.4",
         "typescript": "^5.9.3",
         "vue": "^3.5.24",
-        "vue-router": "^4.6.3",
-        "zod": "^4.1.13"
+        "vue-router": "^4.6.4",
+        "zod": "^4.2.0"
     },
     "devDependencies": {
-        "@iconify-json/lucide": "^1.2.77",
-        "drizzle-kit": "^0.31.7",
-        "sass-embedded": "^1.93.3",
+        "@iconify-json/lucide": "^1.2.81",
+        "drizzle-kit": "^0.31.8",
+        "sass": "^1.96.0",
         "tsx": "^4.21.0"
     }
 }
