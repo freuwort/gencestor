@@ -30,7 +30,7 @@
     const isLoading = ref(false)
     const selectedAnimal = defineModel('animal', { default: null, type: [Number, null] })
     const selectedPage = defineModel('page', { default: 'back', type: [String] })
-    const selectedScale = defineModel('scale', { default: .75, type: [Number] })
+    const selectedScale = defineModel('scale', { default: 1, type: [Number] })
 
     const iframe = ref()
 
