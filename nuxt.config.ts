@@ -6,20 +6,19 @@ export default defineNuxtConfig({
             { baseName: 'images', dir: './assets/images' },
         ],
     },
-    modules: [
-      '@nuxt/eslint',
-      '@nuxt/test-utils',
-      '@nuxt/ui',
-      '@pinia/nuxt',
-    ],
 
     css: [
         '~/assets/css/main.css',
     ],
 
-    compatibilityDate: '2025-07-15',
+    modules: [
+      '@nuxt/ui',
+      '@pinia/nuxt',
+    ],
 
     devtools: {
         enabled: true
     },
+
+    compatibilityDate: '2025-07-15',
 })
