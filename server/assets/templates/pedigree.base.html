@@ -274,6 +274,9 @@
             grid-column: span 2;
             margin-bottom: 2mm;
         }
+        .page-back .cell.gen-2 > b:nth-of-type(2n) {
+            text-align: right;
+        }
         .page-back .cell.gen-2 > span:last-of-type {
             grid-column: span 2;
             margin-top: 2mm;
@@ -287,6 +290,9 @@
         .page-back .cell.gen-3 > strong {
             grid-column: span 2;
         }
+        .page-back .cell.gen-3 > b:nth-of-type(2n) {
+            text-align: right;
+        }
         .page-back .cell.gen-3 > span:last-of-type {
             grid-column: span 2;
         }
@@ -294,12 +300,14 @@
         .page-back .cell.gen-4 {
             display: grid;
             grid-auto-rows: min-content;
-            grid-template-columns: auto auto auto;
-            justify-content: space-between;
+            grid-template-columns: auto 1fr auto;
             line-height: 1.1;
         }
         .page-back .cell.gen-4 > strong {
             grid-column: span 3;
+        }
+        .page-back .cell.gen-4 > b:nth-of-type(2) {
+            text-align: center;
         }
         .page-back .cell.gen-4 > span:last-of-type {
             grid-column: span 3;
