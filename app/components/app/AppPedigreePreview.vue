@@ -66,44 +66,44 @@
 </script>
 
 <style lang="sass" scoped>
-    .controls
+.controls
+    position: absolute
+    top: 0
+    left: 50%
+    z-index: 10
+    transform: translateX(-50%)
+    display: flex
+    gap: .5rem
+    padding: .5rem
+    padding-top: 0
+    background: var(--ui-bg)
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg)
+
+    .corner
         position: absolute
+        width: var(--radius-lg)
+        height: var(--radius-lg)
+        overflow: hidden
+        pointer-events: none
         top: 0
-        left: 50%
-        z-index: 10
-        transform: translateX(-50%)
-        display: flex
-        gap: .5rem
-        padding: .5rem
-        padding-top: 0
-        background: var(--ui-bg)
-        border-radius: 0 0 var(--radius-lg) var(--radius-lg)
+        transition: all 75ms
 
-        .corner
+        &::after
+            content: ''
             position: absolute
-            width: var(--radius-lg)
-            height: var(--radius-lg)
-            overflow: hidden
-            pointer-events: none
-            top: 0
-            transition: all 75ms
+            bottom: -100%
+            width: 200%
+            height: 200%
+            border-radius: 50%
+            box-shadow: 0 0 0 100rem var(--ui-bg)
 
+        &.left
+            right: 100%
             &::after
-                content: ''
-                position: absolute
-                bottom: -100%
-                width: 200%
-                height: 200%
-                border-radius: 50%
-                box-shadow: 0 0 0 100rem var(--ui-bg)
+                left: -100%
 
-            &.left
-                right: 100%
-                &::after
-                    left: -100%
-
-            &.right
-                left: 100%
-                &::after
-                    right: -100%
+        &.right
+            left: 100%
+            &::after
+                right: -100%
 </style>
